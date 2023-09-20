@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -81,40 +83,67 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-    
 
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
-
-
-    print("Start:", problem.getStartState())
-    
-    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
-    # Start's successors: [((5, 4), 'South', 1), ((4, 5), 'West', 1)]    
-    # (successor, action ,stepCost)
-    print("Start's successors:", problem.getSuccessors(problem.getStartState()))    
-    
-    closed = [] #an empty set
-    fringe = util.Stack # insert(make-node(initial-state[problem]), fringe)
-    
-    current = (problem.getSuccessors, '', 0)    # Initialize.
-    
-    fringe.push(current) 
-    
     util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    closed = set()  # an empty set
+    fringe = util.Queue()
+    succList = []
+    node = (problem.getStartState(), [])
+    fringe.push(node)
+    while True:
+        if fringe.isEmpty == True:
+            util.raiseNotDefined()
+        checkState, actionList = fringe.pop()
+        # problem.getCostOfActions(action)
+        if problem.isGoalState(checkState) == True:
+            return actionList
+        closed.add(checkState)
+        # print(problem.getSuccessors(checkState))
+        succList = problem.getSuccessors(checkState)
+        for n in succList:
+            if n[0] not in closed:
+                newActionList = actionList.copy()
+                newActionList.append(n[1])
+                node = (n[0], newActionList)
+                fringe.push(node)
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+
+    closed = set()  # an empty set
+    fringe = util.PriorityQueue()
+    succList = []
+    node = (problem.getStartState(), [], 0)
+    fringe.push(node, 0)
+
+    while True:
+        if fringe.isEmpty == True:
+            util.raiseNotDefined()
+        checkState, actionList, totalCost = fringe.pop()
+        if problem.isGoalState(checkState) == True:
+            return actionList
+        closed.add(checkState)
+        succList = problem.getSuccessors(checkState)
+        for n in succList:
+            if n[0] not in closed:
+                newActionList = actionList.copy()
+                newActionList.append(n[1])
+                newCost = totalCost+n[2]
+                node = (n[0], newActionList, newCost)
+                fringe.push(node, newCost)
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -123,15 +152,47 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    """_summary_
+    You should see that A* finds the optimal solution slightly faster than uniform cost search 
+    (about 549 vs. 620 search nodes expanded in our implementation, 
+    but ties in priority may make your numbers differ slightly).
+    라고 적혀있는데 Search nodes expanded가 466이 나와버림...뭔가 이상한건가...????????? 무서움;;
+    Returns:
+        _type_: _description_
+    """
+    closed = set()  # an empty set
+    fringe = util.PriorityQueue()
+    succList = []
+    node = (problem.getStartState(), [], 0)
+    fringe.push(node, 0)
+
+    while True:
+        if fringe.isEmpty == True:
+            util.raiseNotDefined()
+        checkState, actionList, totalCost = fringe.pop()
+        hStar = heuristic(checkState, problem)
+        if problem.isGoalState(checkState) == True:
+            return actionList
+        closed.add(checkState)
+        succList = problem.getSuccessors(checkState)
+        for n in succList:
+            if n[0] not in closed:
+                hNum = heuristic(n[0], problem) + n[2]
+                if (hStar <= hNum):
+                    newActionList = actionList.copy()
+                    newActionList.append(n[1])
+                    node = (n[0], newActionList, hNum)
+                    fringe.push(node, hNum)
 
 # def TreeSearch(problem, fringe):
 #     # insert(MAKE-NODE(INITIAL-STATE[problem]), fringe)
-    
+
 #     pass
+
 
 # Abbreviations
 bfs = breadthFirstSearch
