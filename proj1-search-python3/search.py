@@ -98,11 +98,22 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))    
     
     closed = [] #an empty set
-    fringe = util.Stack # insert(make-node(initial-state[problem]), fringe)
     
-    current = (problem.getSuccessors, '', 0)    # Initialize.
+    fringe = util.Stack() # insert(make-node(initial-state[problem]), fringe)
     
-    fringe.push(current) 
+    node = (problem.getStartState(), '', 0)    # Initialize.    
+        
+    fringe.push(node) 
+    
+    checkState, action, cost = fringe.pop()    # remove-front(fringe)
+    
+    while True:
+        if fringe.isEmpty:
+            return False # return failure
+        checkState, action, cost = fringe.pop()    # remove-front(fringe)
+        
+        if problem.isGoalState(checkState):
+            pass
     
     util.raiseNotDefined()
 
