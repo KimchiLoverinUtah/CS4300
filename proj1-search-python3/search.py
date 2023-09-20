@@ -81,12 +81,29 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
+    
 
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+
+
+    print("Start:", problem.getStartState())
+    
+    print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
+    # Start's successors: [((5, 4), 'South', 1), ((4, 5), 'West', 1)]    
+    # (successor, action ,stepCost)
+    print("Start's successors:", problem.getSuccessors(problem.getStartState()))    
+    
+    closed = [] #an empty set
+    fringe = util.Stack # insert(make-node(initial-state[problem]), fringe)
+    
+    current = (problem.getSuccessors, '', 0)    # Initialize.
+    
+    fringe.push(current) 
+    
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
@@ -111,6 +128,10 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+# def TreeSearch(problem, fringe):
+#     # insert(MAKE-NODE(INITIAL-STATE[problem]), fringe)
+    
+#     pass
 
 # Abbreviations
 bfs = breadthFirstSearch
