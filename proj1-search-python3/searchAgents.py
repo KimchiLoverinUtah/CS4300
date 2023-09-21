@@ -288,18 +288,19 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
-    #======================================================
+
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        return (self.startingPosition, ())
+        startState = (self.startingPosition, ())
+        return startState
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
-        """        
+        """
         sortTuple = tuple(sorted(state[1]))
         return sortTuple == self.corners
 
@@ -326,15 +327,14 @@ class CornersProblem(search.SearchProblem):
             
             if not nextHitsWall:
                 nextState = (nextx, nexty)
-                nextCorner = list(state[1])
-                
+                nextCorner = set(state[1])
                 if nextState in self.corners:
                     if nextState not in nextCorner:
-                        nextCorner.append(nextState)
+                        nextCorner.add(nextState)
                 successors.append(((nextState, tuple(nextCorner)), action, 1))
+                
         self._expanded += 1 # DO NOT CHANGE
         return successors
-    #======================================================
 
     def getCostOfActions(self, actions):
         """
@@ -370,7 +370,6 @@ def cornersHeuristic(state, problem):
     set2 = set(corners)
     unvisited = list(set2.symmetric_difference(set1))
     pacmanState = state[0]
-    currStateIdx = 0
     h = 0
     while(unvisited):
         minManhat = 100000000
@@ -383,7 +382,6 @@ def cornersHeuristic(state, problem):
         pacmanState = idx
         unvisited.remove(idx)                
     
-    "*** YOUR CODE HERE ***"
     return h # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
@@ -400,10 +398,6 @@ class FoodSearchProblem:
     A search state in this problem is a tuple ( pacmanPosition, foodGrid ) where
       pacmanPosition: a tuple (x,y) of integers specifying Pacman's position
       foodGrid:       a Grid (see game.py) of either True or False, specifying remaining food
-                        A 2-dimensional array of objects backed by a list of lists.  Data is accessed
-                        via grid[x][y] where (x,y) are positions on a Pacman map with x horizontal,
-                        y vertical and the origin (0,0) in the bottom left corner.
-
     """
     def __init__(self, startingGameState):
         self.start = (startingGameState.getPacmanPosition(), startingGameState.getFood())
@@ -412,7 +406,6 @@ class FoodSearchProblem:
         self._expanded = 0 # DO NOT CHANGE
         self.heuristicInfo = {} # A dictionary for the heuristic to store information
 
-    #===================================================================
     def getStartState(self):
         return self.start
 
@@ -483,14 +476,9 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    
     foodList = foodGrid.asList()    #list of foods.
     distances = []                   #distance between pacman and food
-
-    # print("problem = ", problem.walls)
-    # print("problem state = ", "\n",problem.startingGameState)
-    # print("state = ", state)
-    
+        
     if problem.isGoalState(state):
         return 0
     for food in foodList:
@@ -498,7 +486,6 @@ def foodHeuristic(state, problem):
     maxHeu = max(distances)    
     return maxHeu
 
-        
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
     def registerInitialState(self, state):
@@ -528,7 +515,9 @@ class ClosestDotSearchAgent(SearchAgent):
         problem = AnyFoodSearchProblem(gameState)
 
         "*** YOUR CODE HERE ***"
-        return search.aStarSearch(problem)
+        #return search.breadthFirstSearch(problem)
+        return search.uniformCostSearch(problem)
+        #return search.aStarSearch(problem)
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
