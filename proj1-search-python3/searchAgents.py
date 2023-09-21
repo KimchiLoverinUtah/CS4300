@@ -486,13 +486,28 @@ def foodHeuristic(state, problem):
     
     foodList = foodGrid.asList()    #list of foods.
     distances = []                   #distance between pacman and food
+
+    # print("problem = ", problem.walls)
+    # print("problem state = ", "\n",problem.startingGameState)
+    # print("state = ", state)
     
     if problem.isGoalState(state):
         return 0
     for food in foodList:
-        manhattan = util.manhattanDistance(food, position)
-        distances.append(util.manhattanDistance(food,position))
+
+        prob = PositionSearchProblem(problem.startingGameState, start=position, goal=food, warn=False, visualize=False)
+        # print("print len = ", len(search.bfs(prob)))
+        # print("print prob = ", prob)
+        # distances.append(util.manhattanDistance(food,position))
+
+        distances.append(len(search.bfs(prob)))
+
+        # print(mazeDistance(food, position, state))
+        
+        
     maxHeu = max(distances)
+    
+    # 5/4 (optional extra credit; hard)
     
     return maxHeu
 
