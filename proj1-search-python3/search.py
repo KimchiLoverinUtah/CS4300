@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -88,42 +90,60 @@ def depthFirstSearch(problem):
     """
     "*** YOUR CODE HERE ***"
     
-    closed = [] #an empty set
-    
-    fringe = util.Stack() # insert(make-node(initial-state[problem]), fringe)
-    
-    node = (problem.getStartState(), '', 0)    # Initialize.    
-        
-    fringe.push(node) 
-    
-    checkState, action, cost = fringe.pop()    # remove-front(fringe)
-    
+    closed = set()  # an empty set
+    fringe = util.Stack()
+    succList = []
+    node = (problem.getStartState(), [], 0)
+    fringe.push(node)    
     while True:
-        if fringe.isEmpty:
-            return False # return failure
-        checkState, action, cost = fringe.pop()    # remove-front(fringe)
+        print("test 1")
+        print(fringe.isEmpty())
+        if fringe.isEmpty() == True:
+            util.raiseNotDefined()
         
+        checkState, actionList, totalCost = fringe.pop()     
+        print(checkState, actionList, totalCost , " pop out from stack")
         if problem.isGoalState(checkState):
-            pass
+            return actionList
+        
+        print("current check state = ", checkState)
+        print("closed list = ", closed)
+        
+        if  checkState not in closed:
+            closed.add(checkState)
+            succList = problem.getSuccessors(checkState)
+                        
+            for n in succList:
+                
+                if n[0] not in closed:  #check if it's visited or not
+                    newActionList = actionList.copy()
+                    newActionList.append(n[1])
+
+                    node = (n[0], newActionList, 0)
+                    
+                    fringe.push(node)
+                    print("succList = ", succList)
+        print("fringe is empty?" , fringe.isEmpty())
     util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    
+
     closed = set()  # an empty set
     fringe = util.Queue()
     succList = []
     node = (problem.getStartState(), [])
     fringe.push(node)
+    closed.add(problem.getStartState())
     while True:
         if fringe.isEmpty == True:
             util.raiseNotDefined()
         checkState, actionList = fringe.pop()
-        #problem.getCostOfActions(action)
+        # problem.getCostOfActions(action)
         if problem.isGoalState(checkState) == True:
             return actionList
-        closed.add(checkState)
-        #print(problem.getSuccessors(checkState))
+        # print(problem.getSuccessors(checkState))
         succList = problem.getSuccessors(checkState)
         for n in succList:
             if n[0] not in closed:
@@ -131,24 +151,26 @@ def breadthFirstSearch(problem):
                 newActionList.append(n[1])
                 node = (n[0], newActionList)
                 fringe.push(node)
+                closed.add(n[0])
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
-    
+
     closed = set()  # an empty set
     fringe = util.PriorityQueue()
     succList = []
     node = (problem.getStartState(), [], 0)
     fringe.push(node, 0)
-    
+    closed.add(problem.getStartState())
+
     while True:
         if fringe.isEmpty == True:
             util.raiseNotDefined()
         checkState, actionList, totalCost = fringe.pop()
         if problem.isGoalState(checkState) == True:
             return actionList
-        closed.add(checkState)
         succList = problem.getSuccessors(checkState)
         for n in succList:
             if n[0] not in closed:
@@ -156,7 +178,10 @@ def uniformCostSearch(problem):
                 newActionList.append(n[1])
                 newCost = totalCost+n[2]
                 node = (n[0], newActionList, newCost)
-                fringe.push(node, newCost)
+                fringe.update(node, newCost)
+                if(problem.isGoalState(n[0]) == False):
+                    closed.add(n[0])
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -164,6 +189,7 @@ def nullHeuristic(state, problem=None):
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
     return 0
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
@@ -176,34 +202,37 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     Returns:
         _type_: _description_
     """
+    print(heuristic)
     closed = set()  # an empty set
     fringe = util.PriorityQueue()
     succList = []
     node = (problem.getStartState(), [], 0)
     fringe.push(node, 0)
-    
+    closed.add(problem.getStartState())
+
     while True:
         if fringe.isEmpty == True:
             util.raiseNotDefined()
         checkState, actionList, totalCost = fringe.pop()
-        hStar = heuristic(checkState, problem)
         if problem.isGoalState(checkState) == True:
             return actionList
-        closed.add(checkState)
         succList = problem.getSuccessors(checkState)
         for n in succList:
             if n[0] not in closed:
-                hNum = heuristic(n[0], problem) + n[2]
-                if(hStar <= hNum):
-                    newActionList = actionList.copy()
-                    newActionList.append(n[1])
-                    node = (n[0], newActionList, hNum)
-                    fringe.push(node, hNum)
+                hNum = heuristic(n[0], problem) + n[2] + totalCost
+                newActionList = actionList.copy()
+                newActionList.append(n[1])
+                newCost = n[2] + totalCost
+                node = (n[0], newActionList, newCost)
+                fringe.update(node, hNum)
+                if (problem.isGoalState(n[0]) == False):
+                    closed.add(n[0])
 
-# def TreeSearch(problem, fringe):
-#     # insert(MAKE-NODE(INITIAL-STATE[problem]), fringe)
-    
-#     pass
+def TreeSearch(problem, fringe):
+    # insert(MAKE-NODE(INITIAL-STATE[problem]), fringe)
+
+    pass
+
 
 # Abbreviations
 bfs = breadthFirstSearch
