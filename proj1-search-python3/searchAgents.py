@@ -300,9 +300,8 @@ class CornersProblem(search.SearchProblem):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        print(state[1], self.corners)
-        print(all(element == state[1] for element in self.corners))
-        return all(element == state[1] for element in self.corners)
+        sortTuple = tuple(sorted(state[1]))
+        return sortTuple == self.corners
 
     def getSuccessors(self, state):
         """
@@ -327,11 +326,12 @@ class CornersProblem(search.SearchProblem):
             
             if not nextHitsWall:
                 nextState = (nextx, nexty)
-                nextCorner = set(state[1])
+                nextCorner = list(state[1])
                 
                 if nextState in self.corners:
-                    if nextState not in state[1]:
-                        nextCorner.add(nextState)
+                    if nextState not in nextCorner:
+                        print(nextState, "nextCorner: ", nextCorner)
+                        nextCorner.append(nextState)
                         
                 successors.append(((nextState, tuple(nextCorner)), action, 1))
                 

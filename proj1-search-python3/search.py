@@ -97,18 +97,13 @@ def depthFirstSearch(problem):
     node = (problem.getStartState(), [], 0)
     fringe.push(node)    
     while True:
-        print("test 1")
-        print(fringe.isEmpty())
+
         if fringe.isEmpty() == True:
             util.raiseNotDefined()
         
         checkState, actionList, totalCost = fringe.pop()     
-        print(checkState, actionList, totalCost , " pop out from stack")
         if problem.isGoalState(checkState):
             return actionList
-        
-        print("current check state = ", checkState)
-        print("closed list = ", closed)
         
         if  checkState not in closed:
             closed.add(checkState)
@@ -123,8 +118,6 @@ def depthFirstSearch(problem):
                     node = (n[0], newActionList, 0)
                     
                     fringe.push(node)
-                    print("succList = ", succList)
-        print("fringe is empty?" , fringe.isEmpty())
     util.raiseNotDefined()
 
 
@@ -203,7 +196,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     Returns:
         _type_: _description_
     """
-    print(heuristic)
     closed = set()  # an empty set
     fringe = util.PriorityQueue()
     succList = []
