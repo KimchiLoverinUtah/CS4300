@@ -72,8 +72,6 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return [s, s, w, s, w, w, s, w]
 
-    return [s, s, w, s, w, w, s, w]
-
 
 def depthFirstSearch(problem):
     """
@@ -97,28 +95,20 @@ def depthFirstSearch(problem):
     node = (problem.getStartState(), [], 0)
     fringe.push(node)    
     while True:
-
         if fringe.isEmpty() == True:
             util.raiseNotDefined()
-        
         checkState, actionList, totalCost = fringe.pop()     
         if problem.isGoalState(checkState):
             return actionList
-        
         if  checkState not in closed:
             closed.add(checkState)
             succList = problem.getSuccessors(checkState)
-                        
             for n in succList:
-                
                 if n[0] not in closed:  #check if it's visited or not
                     newActionList = actionList.copy()
                     newActionList.append(n[1])
-
                     node = (n[0], newActionList, 0)
-                    
                     fringe.push(node)
-    util.raiseNotDefined()
 
 
 def breadthFirstSearch(problem):
@@ -155,7 +145,7 @@ def uniformCostSearch(problem):
     closed = set()  # an empty set
     fringe = util.PriorityQueue()
     succList = []
-    node = (problem.getStartState(), [], 0)
+    node = (problem.getStartState(), [], 0) # Start state node has three info; start state, action, cost
     fringe.push(node, 0)
     closed.add(problem.getStartState())
 
@@ -188,14 +178,6 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
-    """_summary_
-    You should see that A* finds the optimal solution slightly faster than uniform cost search 
-    (about 549 vs. 620 search nodes expanded in our implementation, 
-    but ties in priority may make your numbers differ slightly).
-    라고 적혀있는데 Search nodes expanded가 466이 나와버림...뭔가 이상한건가...????????? 무서움;;
-    Returns:
-        _type_: _description_
-    """
     closed = set()  # an empty set
     fringe = util.PriorityQueue()
     succList = []
@@ -216,8 +198,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 newActionList = actionList.copy()
                 newActionList.append(n[1])
                 newCost = n[2] + totalCost
-                node = (n[0], newActionList, newCost)
-                fringe.update(node, hNum)
+                node = (n[0], newActionList, newCost)   # Update cost
+                fringe.update(node, hNum)   # Set the priority to heuristic
                 if (problem.isGoalState(n[0]) == False):
                     closed.add(n[0])
 
