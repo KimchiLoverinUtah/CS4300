@@ -19,7 +19,6 @@ Pacman agents (in searchAgents.py).
 
 import util
 
-
 class SearchProblem:
     """
     This class outlines the structure of a search problem, but doesn't implement
@@ -73,6 +72,8 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return [s, s, w, s, w, w, s, w]
 
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -89,6 +90,41 @@ def depthFirstSearch(problem):
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
     "*** YOUR CODE HERE ***"
+    
+    closed = set()  # an empty set
+    fringe = util.Stack()
+    succList = []
+    node = (problem.getStartState(), [], 0)
+    fringe.push(node)    
+    while True:
+        print("test 1")
+        print(fringe.isEmpty())
+        if fringe.isEmpty() == True:
+            util.raiseNotDefined()
+        
+        checkState, actionList, totalCost = fringe.pop()     
+        print(checkState, actionList, totalCost , " pop out from stack")
+        if problem.isGoalState(checkState):
+            return actionList
+        
+        print("current check state = ", checkState)
+        print("closed list = ", closed)
+        
+        if  checkState not in closed:
+            closed.add(checkState)
+            succList = problem.getSuccessors(checkState)
+                        
+            for n in succList:
+                
+                if n[0] not in closed:  #check if it's visited or not
+                    newActionList = actionList.copy()
+                    newActionList.append(n[1])
+
+                    node = (n[0], newActionList, 0)
+                    
+                    fringe.push(node)
+                    print("succList = ", succList)
+        print("fringe is empty?" , fringe.isEmpty())
     util.raiseNotDefined()
 
 
