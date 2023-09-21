@@ -494,21 +494,8 @@ def foodHeuristic(state, problem):
     if problem.isGoalState(state):
         return 0
     for food in foodList:
-
-        prob = PositionSearchProblem(problem.startingGameState, start=position, goal=food, warn=False, visualize=False)
-        # print("print len = ", len(search.bfs(prob)))
-        # print("print prob = ", prob)
-        # distances.append(util.manhattanDistance(food,position))
-
-        distances.append(len(search.bfs(prob)))
-
-        # print(mazeDistance(food, position, state))
-        
-        
-    maxHeu = max(distances)
-    
-    # 5/4 (optional extra credit; hard)
-    
+        distances.append(mazeDistance(food, position, problem.startingGameState))
+    maxHeu = max(distances)    
     return maxHeu
 
         
