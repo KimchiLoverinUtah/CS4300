@@ -112,78 +112,8 @@ class ReflexAgent(Agent):
         score += 1.0/ minFood
         score -= 1.0/ ghostDistance
         
-        return score
-
-        # # foodscore = 0
-        # # ghostscore = 0
-        # # foodDistance = 0 
-        # # tempMinDis = 999999
-        # # ghostDistance = 0
-        # # tempMinGhostDis = 999999
-        # #postion is x and y
-        # # print("current position = ", currentPos)
-        # # print("new Pos = " , newPos[0] , newPos[1])
-        # # print("scared time = " , newScaredTimes)
-        # # print("new food = ", newFood)
-        # # print("ghoststates = ", newGhostStates)
-
-        # foodList = newFood.asList()
-
-        # # print("scared time = ", newScaredTimes)
-
-        # # if newScaredTimes == 0:
-        # #     print("it is 0")
-        # # else:
-        # #     print("it is not 0")
-
-        # # if newFood[newPos[0]][newPos[1]]:
-        # #     # if pacman eats food
-        # #     score += 10
-
-        # for food in foodList:
-        #     foodDistance = manhattanDistance(newPos, food)
-        #     # print("food dis = ", foodDistance, "tempDis = ", tempMinDis)
-        #     tempMinDis = min(foodDistance, tempMinDis)
-        #     # print("tempMinDis is updated to = ", tempMinDis)
-        
-        # foodscore += foodDistance
-
-        # for ghost in newGhostStates:
-            
-        #     # ghostDistance = manhattanDistance(newPos, ghost.getPosition())
-        #     # # print("ghost dis = ", ghostDistance, "temp ghost = ", tempMinGhostDis)
-        #     # tempMinGhostDis = min(ghostDistance, tempMinGhostDis)
-        #     # # print("temp ghost distance is updated to = ", ghostDistance)
-
-        #     if ghost.scaredTimer == 0 and tempMinGhostDis < 2:
-        #         scroe += 500
-        #     #        isScared = ghostState.scaredTimer > 0
-
-        #     # print("ghot scared timer = ", ghost.scaredTimer)
-        #     # if ghost.scaredTimer > 0:
-        #     #     print("it is scared")
-        #     # else:
-        #     #     print("it is not scared")
-        #     # ghostDistance = manhattanDistance(newPos, ghost.getPosition())
-        #     # if ghostDistance < tempMinGhostDis:
-        #     #     tempMinGhostDis = ghostDistance
-        #     # print("current min ghost dist = ", tempMinGhostDis)
-
-        #     # # check if they are scared or not and distance is valid
-        #     # if (ghost.scaredTimer == 0) and (tempMinGhostDis < 2):
-        #     #     score -= 500
-        #     # elif (ghost.scaredtimer > 0) and (tempMinGhostDis > 2) and (tempMinGhostDis< 10):
-        #     #     score += 500  
-
-        #     # if ghost.scaredTimer == 0 and tempMinGhostDis < 2:
-        #     #     score -= 500
-        #     # elif ghost.scaredTimer > 0 and tempMinGhostDis < 10:
-        #     #     score += 500
-            
-        # return -score
-
-
-        
+        return score       
+     
 
 def scoreEvaluationFunction(currentGameState):
     """
@@ -229,7 +159,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
         gameState.getLegalActions(agentIndex):
         Returns a list of legal actions for an agent
-        agentIndex=0 means Pacman, ghosts are >= 1
+        agentIndex=0 means Pacman, ghosts are >= 1ew
 
         gameState.generateSuccessor(agentIndex, action):
         Returns the successor game state after an agent takes an action
@@ -244,7 +174,78 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns whether or not the game state is a losing state
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        value = float('-inf')
+        action = Directions.LEFT
+        for ac in gameState.getLegalActions(0):
+            successor = gameState.generateSuccessor(0, ac)
+            miniValue = self.minimax(successor, 1, False, gameState.getNumAgents())
+            if miniValue > value:
+                value = miniValue
+                action = ac
+            
+        return action
+        
+    def minimax(self, gameState, depth, maxPlayer, ghostnum):
+        if gameState.isWin() or gameState.isLose() or depth == self.depth:
+            return self.evaluationFunction(gameState)
+        
+        if maxPlayer:
+            value = float('-inf')
+            action = Directions.EAST
+            for ac in gameState.getLegalActions(0):
+                successor = gameState.generateSuccessor(0, ac)
+                miniValue = self.minimax(successor, depth+1, False, ghostnum)
+                if miniValue >= value:
+                    value = miniValue
+                    action = ac
+                #print("Max value: ", value)
+            return value
+        else:
+            value = float('inf')
+            action = Directions.EAST
+            for i in range(1, ghostnum):
+                for ac in gameState.getLegalActions(i):
+                    successor = gameState.generateSuccessor(i, ac)
+                    miniValue = self.minimax(successor, depth+1, True, ghostnum)
+                    if value >= miniValue:
+                        value = miniValue
+                        action = ac
+                    #print("Min value: ", value)
+            return value
+        
+        
+        # action = self.maxValue(gameState, 0)
+        # return action
+        
+    # # Agent's Control
+    # def maxValue(self, gameState, depth):
+
+    #     maxResult = -1
+    #     action = Directions.EAST
+            
+    #     if gameState.isWin() or gameState.isLose() or depth == 0:
+    #         return self.evaluationFunction(gameState)
+        
+    #     # for each successor of state:
+    #     #   v = max(v, value(successor))
+    #     for ac in gameState.getLegalAction(0):
+    #         successor = gameState.generateSuccessor(0, ac)
+    #         maxCompare = self.minValue(successor, depth, )
+    #         if maxCompare >= maxResult:
+    #             maxResult = maxCompare
+    #             action = ac
+
+    #     return action
+    
+    # # Opponent's Control
+    # def minValue(self, gameState, depth):
+
+    #     minResult = 999999
+        
+    #     if gameState.isWin() or gameState.isLose():
+    #         return self.evaluationFunction(gameState)
+
+    #     return minResult
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
     """
