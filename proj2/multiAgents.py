@@ -80,68 +80,107 @@ class ReflexAgent(Agent):
         #3. As features, try the reciprocal of important values (such as distance to food) 
         #   rather than just the values themselves.
 
-        score = 0
-        foodDistance = 0 
-        tempMinDis = 999999
+        foodDistance = 0
         ghostDistance = 0
-        tempMinGhostDis = 999999
-        #postion is x and y
-        # print("current position = ", currentPos)
-        # print("new Pos = " , newPos[0] , newPos[1])
-        # print("scared time = " , newScaredTimes)
-        # print("new food = ", newFood)
-        # print("ghoststates = ", newGhostStates)
+        score = successorGameState.getScore()
+        minFood = 999999
+        minGhost = 999999
 
-        foodList = newFood.asList()
-
-        # print("scared time = ", newScaredTimes)
-
-        # if newScaredTimes == 0:
-        #     print("it is 0")
-        # else:
-        #     print("it is not 0")
-
-        # if newFood[newPos[0]][newPos[1]]:
-        #     # if pacman eats food
-        #     score += 10
-
+        for food in newFood.asList():
+            #   calculate distance from current position to food
+            foodDistance = manhattanDistance(newPos,food)
+            #   find minimum distance of food
+            if foodDistance < minFood:
+                minFood = foodDistance
         
+        for ghost in newGhostStates:
+            ghostDistance = manhattanDistance(newPos, ghost.getPosition())
+            
+            # let's give condition that if pacman is close with ghost,
+            # it's not good
+
+            if ghostDistance < 2 and ghost.scaredTimer == 0:
+                # print("too close")
+                return -99999
+            # elif ghost.scaredTimer > 0 and ghostDistance < 3:
+            #     # print("trying to eat")
+            #     scroe += ghostDistance
+        
+            if ghostDistance < minGhost:
+                minGhost = ghostDistance
+        #   if food is too far away, it's not good option.
+        score += 1.0/ minFood
+        score -= 1.0/ ghostDistance
+        
+        return score
+
+        # # foodscore = 0
+        # # ghostscore = 0
+        # # foodDistance = 0 
+        # # tempMinDis = 999999
+        # # ghostDistance = 0
+        # # tempMinGhostDis = 999999
+        # #postion is x and y
+        # # print("current position = ", currentPos)
+        # # print("new Pos = " , newPos[0] , newPos[1])
+        # # print("scared time = " , newScaredTimes)
+        # # print("new food = ", newFood)
+        # # print("ghoststates = ", newGhostStates)
+
+        # foodList = newFood.asList()
+
+        # # print("scared time = ", newScaredTimes)
+
+        # # if newScaredTimes == 0:
+        # #     print("it is 0")
+        # # else:
+        # #     print("it is not 0")
+
+        # # if newFood[newPos[0]][newPos[1]]:
+        # #     # if pacman eats food
+        # #     score += 10
 
         # for food in foodList:
         #     foodDistance = manhattanDistance(newPos, food)
-
-        #     print(foodDistance , " ", tempMinDis)
+        #     # print("food dis = ", foodDistance, "tempDis = ", tempMinDis)
         #     tempMinDis = min(foodDistance, tempMinDis)
-        #     print("temp min dist = " , tempMinDis)
+        #     # print("tempMinDis is updated to = ", tempMinDis)
+        
+        # foodscore += foodDistance
 
-        for ghost in newGhostStates:
+        # for ghost in newGhostStates:
             
-            #        isScared = ghostState.scaredTimer > 0
+        #     # ghostDistance = manhattanDistance(newPos, ghost.getPosition())
+        #     # # print("ghost dis = ", ghostDistance, "temp ghost = ", tempMinGhostDis)
+        #     # tempMinGhostDis = min(ghostDistance, tempMinGhostDis)
+        #     # # print("temp ghost distance is updated to = ", ghostDistance)
 
-            # print("ghot scared timer = ", ghost.scaredTimer)
-            # if ghost.scaredTimer > 0:
-            #     print("it is scared")
-            # else:
-            #     print("it is not scared")
-            ghostDistance = manhattanDistance(newPos, ghost.getPosition())
-            if ghostDistance < tempMinGhostDis:
-                tempMinGhostDis = ghostDistance
-            # print("current min ghost dist = ", tempMinGhostDis)
+        #     if ghost.scaredTimer == 0 and tempMinGhostDis < 2:
+        #         scroe += 500
+        #     #        isScared = ghostState.scaredTimer > 0
 
-            # # check if they are scared or not and distance is valid
-            # if (ghost.scaredTimer == 0) and (tempMinGhostDis < 2):
-            #     score -= 500
-            # elif (ghost.scaredtimer > 0) and (tempMinGhostDis > 2) and (tempMinGhostDis< 10):
-            #     score += 500  
+        #     # print("ghot scared timer = ", ghost.scaredTimer)
+        #     # if ghost.scaredTimer > 0:
+        #     #     print("it is scared")
+        #     # else:
+        #     #     print("it is not scared")
+        #     # ghostDistance = manhattanDistance(newPos, ghost.getPosition())
+        #     # if ghostDistance < tempMinGhostDis:
+        #     #     tempMinGhostDis = ghostDistance
+        #     # print("current min ghost dist = ", tempMinGhostDis)
 
-            if ghost.scaredTimer == 0 and tempMinGhostDis < 2:
-                score -= 500
-            elif ghost.scaredTimer > 0 and tempMinGhostDis < 10:
-                score += 500
+        #     # # check if they are scared or not and distance is valid
+        #     # if (ghost.scaredTimer == 0) and (tempMinGhostDis < 2):
+        #     #     score -= 500
+        #     # elif (ghost.scaredtimer > 0) and (tempMinGhostDis > 2) and (tempMinGhostDis< 10):
+        #     #     score += 500  
+
+        #     # if ghost.scaredTimer == 0 and tempMinGhostDis < 2:
+        #     #     score -= 500
+        #     # elif ghost.scaredTimer > 0 and tempMinGhostDis < 10:
+        #     #     score += 500
             
-        score += 1/tempMinDis
-        print("score = ", score)
-        return score
+        # return -score
 
 
         
