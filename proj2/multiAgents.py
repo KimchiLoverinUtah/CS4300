@@ -191,26 +191,16 @@ class MinimaxAgent(MultiAgentSearchAgent):
         
         if maxPlayer:
             value = float('-inf')
-            action = Directions.EAST
             for ac in gameState.getLegalActions(0):
                 successor = gameState.generateSuccessor(0, ac)
-                miniValue = self.minimax(successor, depth+1, False, ghostnum)
-                if miniValue >= value:
-                    value = miniValue
-                    action = ac
-                #print("Max value: ", value)
+                value = max(value, self.minimax(successor, depth+1, False, ghostnum))
             return value
         else:
             value = float('inf')
-            action = Directions.EAST
             for i in range(1, ghostnum):
                 for ac in gameState.getLegalActions(i):
                     successor = gameState.generateSuccessor(i, ac)
-                    miniValue = self.minimax(successor, depth+1, True, ghostnum)
-                    if value >= miniValue:
-                        value = miniValue
-                        action = ac
-                    #print("Min value: ", value)
+                    value = min(value, self.minimax(successor, depth+1, True, ghostnum))
             return value
         
         
