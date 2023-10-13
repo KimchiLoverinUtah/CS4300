@@ -337,47 +337,75 @@ def betterEvaluationFunction(currentGameState):
     evaluation function (question 5).
 
     DESCRIPTION: <write something here so we know what you did>
+    
+    1. Food distance
+    2. Ghost distance
+    3. higher number better.
+    4. if we can kill ghost, score up
+    5. As features, try the reciprocal of important values (such as distance to food)
+        rather than just the values themselves.
+    6. Give priority weight for every features to calculate better score
+    
     """
     "*** YOUR CODE HERE ***"
 
-        #1. higher number better.
-        #2. if we can kill ghost, score up
-        #3. As features, try the reciprocal of important values (such as distance to food) 
-        #   rather than just the values themselves.
+    # Useful information you can extract from a GameState (pacman.py)
+    currentPos = currentGameState.getPacmanPosition()
+    currentFood = currentGameState.getFood()
+    currentGhost = currentGameState.getGhostStates()
+    currentCapsule = currentGameState.getCapsules()
+    currentGameScore = currentGameState.getScore()
+    # newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
 
-        foodDistance = 0
-        ghostDistance = 0
-        score = successorGameState.getScore()
-        minFood = 999999
-        minGhost = 999999
+    
 
-        for food in newFood.asList():
-            #   calculate distance from current position to food
-            foodDistance = manhattanDistance(newPos,food)
-            #   find minimum distance of food
-            if foodDistance < minFood:
-                minFood = foodDistance
-        
-        for ghost in newGhostStates:
-            ghostDistance = manhattanDistance(newPos, ghost.getPosition())
-            
-            # let's give condition that if pacman is close with ghost,
-            # it's not good
+    foodDistance = 0
+    ghostDistance = 0
+    capsuleDistance = 0
+    score = 0
+    minFood = 999999
+    minGhost = 999999
+    minCapsule = 999999
 
-            if ghostDistance < 2 and ghost.scaredTimer == 0:
-                # print("too close")
-                return -99999
-            # elif ghost.scaredTimer > 0 and ghostDistance < 3:
-            #     # print("trying to eat")
-            #     scroe += ghostDistance
+    for food in currentFood.asList():
+        #   calculate distance from current position to food
+        foodDistance = manhattanDistance(currentPos, food)
+        #   find minimum distance of food
+        if foodDistance < minFood:
+            minFood = foodDistance
+
+    for ghost in currentGhost:
+        ghostDistance = manhattanDistance(currentPos, ghost.getPosition())
+
+        # let's give condition that if pacman is close with ghost,
+        # it's not good
+
+        # if ghostDistance < 2 and ghost.scaredTimer == 0:
+        #     # print("too close")
+        #     return -99999
+        # # elif ghost.scaredTimer > 0 and ghostDistance < 3:
+        # #     # print("trying to eat")
+        # #     scroe += ghostDistance
+        # if ghost.scaredTimer > 0 and ghostDistance < 2:
+        #     score += 1
+
+        if ghost.scaredTimer == 0 and ghostDistance < 2:
+            score -= 100
+            return score
+        elif ghost.scaredTimer > 0:
+            score += 100 / ghostDistance
+
+    for capsule in currentCapsule:
+        capsuleDistance = manhattanDistance(currentPos, capsule)
         
-            if ghostDistance < minGhost:
-                minGhost = ghostDistance
-        #   if food is too far away, it's not good option.
-        score += 1.0/ minFood
-        score -= 1.0/ ghostDistance
-        
-        return score
+    #   if food is too far away, it's not good option.
+    score += 1 / minFood * 10
+    score -= 1 / ghostDistance * 40
+    if capsuleDistance != 0:
+        score += 1 / capsuleDistance * 20
+    score += currentGameScore * 100
+      
+    return score
 
 # Abbreviation
 better = betterEvaluationFunction
